@@ -51,8 +51,8 @@ for ct = 1:50
     j = 1; %SMA index counter
     data_y = data(3:end, col); %Test data ([P] (uM))
     data_yrep = data(3:end, col + 10); %Replicate test data ([P] (uM))
-    SMA = zeros([1, 7482]); %Pre-allocates an array of zeros for use
-    SMAyrep = zeros([1, 7482]); %Pre-allocates an array of zeros for use
+    SMA = zeros([1, 7482]); %Pre-allocates an array of zeros for use. This array represents the Simple Moving Average values
+    SMAyrep = zeros([1, 7482]); %Pre-allocates an array of zeros for use. This array represents the Simple Moving Average values for the replicate test data
     col = col + 1;
     for i = 3:numel(data_y)
         for k = 1:-1:0
@@ -63,9 +63,9 @@ for ct = 1:50
         SMAyrep(j) = SMAyrep(j) / 2;
         j = j + 1;
     end
-    data_SMAave = (SMA(1:end) + SMAyrep(1:end)) / 2;
+    data_SMAave = (SMA(1:end) + SMAyrep(1:end)) / 2; %This is the average of the SMA and SMArep values to find the best fitting and smoothed line that represents the data accurately
     coeffs = polyfit(data_x(11:21), data_SMAave(1:11), 1);
-    vnaught(z) = coeffs(1);
+    vnaught(z) = coeffs(1); %This is Vnaught, the initial slope of the line, and will be placed into the array that is returned
     z = z + 1;
     if col == 11
         col = 21;
