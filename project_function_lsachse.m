@@ -40,13 +40,13 @@ col = 2; %Data column index counter
 
 %%____________________
 %% CALCULATIONS
-%These statements will fill an array of vnaughts respective to their
-%concentrations. A simple moving average (SMA) is used to try and smooth
-%the noisy data as much as possible. An average of the test data and the
-%replicate test data is then taken and the initial slope of that line
-%(calculated within the first 21 seconds) and that value is placed into the
-%vnaught array. This is repeated for each concentration to add up to a
-%total of 50 vnaughts.
+% These statements will fill an array of vnaughts respective to their
+% concentrations. A simple moving average (SMA) is used to try and smooth
+% the noisy data as much as possible. An average of the test data and the
+% replicate test data is then taken and the initial slope of that line
+% (calculated within the first 21 seconds) and that value is placed into the
+% vnaught array. This is repeated for each concentration to add up to a
+% total of 50 vnaughts.
 for ct = 1:50
     j = 1; %SMA index counter
     data_y = data(3:end, col); %Test data ([P] (uM))
@@ -67,6 +67,7 @@ for ct = 1:50
     coeffs = polyfit(data_x(11:21), data_SMAave(1:11), 1);
     vnaught(z) = coeffs(1); %This is Vnaught, the initial slope of the line, and will be placed into the array that is returned
     z = z + 1;
+    % If statement to pass over test duplicates
     if col == 11
         col = 21;
     end
