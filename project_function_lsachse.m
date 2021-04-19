@@ -1,9 +1,10 @@
-function [v_naught] = M2_Algorithm_014_24(data)
+function [v_naught, vMax, Km] = M2_Algorithm_014_24(data)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ENGR 132
 % Program Description
 % The purpose of this function is to determine the initial velocities of
-% each concentration of the different substrates.
+% each concentration of the different substrates. It is also to return the
+% paramaters of vMax and Km for each enzyme.
 %
 % Function Call
 % M2_Algorithm_014_24(data)
@@ -15,6 +16,11 @@ function [v_naught] = M2_Algorithm_014_24(data)
 % Output Arguments
 % v_naught - The array that will be returned with each initial velocity for
 % each concentration of substrate (m/s)
+%
+% vMax - The array that will be returned with each vMax for each enzyme
+% (m/s)
+%
+% Km - The array that will be returned with each Km for each enzyme ([S] (uM))
 %
 % Assignment Information
 %   Assignment:     M02, Problem 1
@@ -28,29 +34,26 @@ function [v_naught] = M2_Algorithm_014_24(data)
 %        maintained academic integrity.
 %     Peers we worked with: N/A
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Vi=Vmax−Km×Vi/[S] %this is the equation we need to use.
-% "Vmax is the highest vnaught value of the ones you calculated using different concentrations"
-% Vmax might be the last value in each row?
 %% ____________________
 %% INITIALIZATION
-data = readmatrix('Data_nextGen_KEtesting_allresults.csv'); %Imports the file to be used
+data = readmatrix('Data_nextGen_KEtesting_allresults.csv');
 data_x = data(3:end, 1); %Time data (seconds)
-vnaught = zeros([5, 10]); %Pre-allocates the array of vnaughts
-Vrow = 1; %Vnaught row counter
-Vcol = 1; %Vnaught column counter
+v_naught = zeros([5, 10]); %Pre-allocates the array of vnaughts (5x10)
+Km = zeros([1, 5]); %Pre-allocates the array of Km values (1x5)
+Vrow = 1; %V_naught array row counter
+Vcol = 1; %V_naught array column counter
 col = 2; %Data column index counter
-vMax =  zeros([5, 1]); % Pre-allocates an array of vmaxes
-
+Sub_Concentrations = data(1, 2:11); %Creates array of the substrate concentrations for use ([S] (uM))
 
 %%____________________
 %% CALCULATIONS
-%These statements will fill an array of vnaughts respective to their
+%All of these statements will fill an array of vnaughts respective to their
 %concentrations. A simple moving average (SMA) is used to try and smooth
 %the noisy data as much as possible. An average of the test data and the
-%replicate test data is then taken and the initial slope of that line
-%(calculated within the first 20 seconds) and that value is placed into the
-%vnaught array. This is repeated for each concentration to add up to a
-%total of 50 vnaughts.
+%replicate test data is then taken and the initial slope of that data
+%(calculated within the first 20 seconds) is found. That value is placed 
+%into the vnaught array. This is repeated for each concentration to add up
+%to a total of 50 vnaughts.
 for ct = 1:50
     j = 1; %SMA index counter
     data_y = data(3:end, col); %Test data ([P] (uM))
@@ -58,6 +61,8 @@ for ct = 1:50
     SMA = zeros([1, 7482]); %Pre-allocates an array of zeros for use
     SMAyrep = zeros([1, 7482]); %Pre-allocates an array of zeros for use
     col = col + 1;
+    %These statements smooth both the original test data and the replicate
+    %test data
     for i = 3:numel(data_y)
         for k = 1:-1:0
             SMA(j) = SMA(j) + (data_y(i - k));
@@ -67,14 +72,17 @@ for ct = 1:50
         SMAyrep(j) = SMAyrep(j) / 2;
         j = j + 1;
     end
-    data_SMAave = (SMA(1:end) + SMAyrep(1:end)) / 2;
-    coeffs = polyfit(data_x(2:20), data_SMAave(1:19), 1);
-    vnaught(Vrow, Vcol) = coeffs(1);
+    data_SMAave = (SMA(1:end) + SMAyrep(1:end)) / 2; %Takes the average of the original and replicate test data in their smoothed form
+    coeffs = polyfit(data_x(2:20), data_SMAave(1:19), 1); %Finds the slope of that averaged data within the first 20 seconds
+    v_naught(Vrow, Vcol) = coeffs(1); %Places that value into the array as needed
     Vcol = Vcol + 1;
     if Vcol == 11
         Vcol = 1;
         Vrow = Vrow + 1;
     end
+    %If the column index reaches the highest substrate concentration, it
+    %will jump over the replicate test data to get to the next enzyme that
+    %needs to be analyzed
     if col == 11
         col = 21;
     end
@@ -89,10 +97,16 @@ for ct = 1:50
     end
 end
 
-v_naught = vnaught;
+vMax = max(v_naught, [], 2); %Finds vMax for each enzyme
 
-vMax = max(v_naught, [], 2);
-
+%These statements use the Lineweaver-Burk method (double reciprocals) to
+%try and find Km for each enzyme
+for ct = 1:5
+    V_recip = 1 ./ v_naught(ct, :);
+    S_recip = 1 ./ Sub_Concentrations;
+    m = polyfit(S_recip, V_recip, 1);
+    Km(ct) = m(1) * vMax(ct);
+end
 
 %% ____________________
 %% FORMATTED TEXT/FIGURE DISPLAYS
