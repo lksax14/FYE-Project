@@ -1,4 +1,4 @@
-function [v_naught, vMax, Km] = project_function_template(data)
+function [v_naught, vMax, Km] = M3_MM_PGOX50_014_24(data)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ENGR 132
 % Program Description
@@ -44,6 +44,26 @@ Vrow = 1; %V_naught array row counter
 Vcol = 1; %V_naught array column counter
 col = 2; %Data column index counter
 Sub_Concentrations = data(2, 2:11); %Creates array of the substrate concentrations for use ([S] (uM))
+data_y1 = data(5:end, 2);
+data_y2 = data(5:end, 3);
+data_y3 = data(5:end, 4);
+data_y4 = data(5:end, 5);
+data_y5 = data(5:end, 6);
+data_y6 = data(5:end, 7);
+data_y7 = data(5:end, 8);
+data_y8 = data(5:end, 9);
+data_y9 = data(5:end, 10);
+data_y10 = data(5:end, 11);
+v0line1 = v_naught(1) * data_x;
+v0line2 = v_naught(2) * data_x;
+v0line3 = v_naught(3) * data_x;
+v0line4 = v_naught(4) * data_x;
+v0line5 = v_naught(5) * data_x;
+v0line6 = v_naught(6) * data_x;
+v0line7 = v_naught(7) * data_x;
+v0line8 = v_naught(8) * data_x;
+v0line9 = v_naught(9) * data_x;
+v0line10 = v_naught(10) * data_x;
 
 %%____________________
 %% CALCULATIONS
@@ -84,19 +104,149 @@ vMax = max(v_naught, [], 2); %Finds vMax for each enzyme
 V_recip = 1 ./ v_naught(1, :);
 S_recip = 1 ./ Sub_Concentrations;
 m = polyfit(S_recip, V_recip, 1);
-Km(1) = m(1) * vMax(1);
+Km = m(1) * vMax;
+
+michaelis_menten = vMax * Sub_Concentrations ./ (Km + Sub_Concentrations);
 
 
 %% ____________________
 %% FORMATTED TEXT/FIGURE DISPLAYS
-S_recip1 = 1 ./ Sub_Concentrations;
-V_recip1 = 1 ./ v_naught(1, :);
-figure(1)
-plot(S_recip1, V_recip1, 'k-');
-grid on
-coeff = polyfit(S_recip1, V_recip1, 1);
-vmax = 1 / coeff(2);
-disp(vmax);
+figure(1);
+
+subplot(2, 5, 1); %first row, first column subplot of 2x5 grid
+plot(data_x, data_y1, 'r-');
+grid on;
+hold on; 
+plot(data_x, v0line1, 'k-');
+xlabel("Time (sec)");
+ylabel("Concentration of Product (uM))");
+title("PGO-X50 Values (3.75 uM)");
+legend('Enzyme Data','Initial Velocity','Location','best');
+ylim([0 10]);
+grid on;
+hold off 
+
+
+subplot(2, 5, 2); %first row, second column subplot of 2x5 grid %%10
+plot(data_x, data_y2, 'r-');
+hold on;
+plot(data_x, v0line2, 'k-');
+xlabel("Time (sec)");
+ylabel("Concentration of Product (uM)");
+title("PGO-X50 Values (7.5 uM)");
+ylim([0 20]);
+grid on;
+hold off 
+
+
+subplot(2, 5, 3); %first row, third column subplot of 2x5 grid %%20
+plot(data_x, data_y3, 'r-');
+hold on;
+plot(data_x, v0line3, 'k-');
+xlabel("Time (sec)");
+ylabel("Concentration of Product (uM)");
+title("PGO-X50 Values (15 uM)");
+ylim([1 40]);
+grid on;
+hold off 
+
+
+subplot(2, 5, 4); %first row, fourth column subplot of 2x5 grid 
+plot(data_x, data_y4, 'r-');
+hold on;
+plot(data_x, v0line4, 'k-');
+xlabel("Time (sec)");
+ylabel("Concentration of Product (uM)");
+title("PGO-X50 Values (30 uM)");
+ylim([0 100]);
+grid on;
+hold off 
+
+
+subplot(2, 5, 5); %first row, fifth column subplot of 2x5 grid
+plot(data_x, data_y5, 'r-');
+hold on;
+plot(data_x, v0line5, 'k-');
+xlabel("Time (sec)");
+ylabel("Concentration of Product (uM)");
+title("PGO-X50 Values (65 uM)");
+ylim([0 250]);
+grid on;
+hold off 
+
+
+subplot(2, 5, 6); %second row, first column subplot of 2x5 grid
+plot(data_x, data_y6, 'r-');
+hold on;
+plot(data_x, v0line6, 'k-');
+xlabel("Time (sec)");
+ylabel("Concentration of Product (uM)");
+title("PGO-X50 Values (125 uM)");
+ylim([0 450]);
+grid on;
+hold off 
+
+
+subplot(2, 5, 7); %second row, second column subplot of 2x5 grid
+plot(data_x, data_y7, 'r-');
+hold on;
+plot(data_x, v0line7, 'k-');
+xlabel("Time (sec)");
+ylabel("Concentration of Product (uM)");
+title("PGO-X50 Values (250 uM)");
+ylim([0 700]);
+grid on;
+hold off 
+
+
+subplot(2, 5, 8); %second row, third column subplot of 2x5 grid
+plot(data_x, data_y8, 'r-');
+hold on;
+plot(data_x, v0line8, 'k-');
+xlabel("Time (sec)");
+ylabel("Concentration of Product (uM)");
+title("PGO-X50 Values (500 uM)");
+ylim([0 850]);
+grid on;
+hold off 
+
+
+subplot(2, 5, 9); %second row, fourth column subplot of 2x5 grid
+plot(data_x, data_y9, 'r-');
+hold on;
+plot(data_x, v0line9, 'k-');
+xlabel("Time (sec)");
+ylabel("Concentration of Product (uM)");
+title("PGO-X50 Values (1000 uM)");
+ylim([0 1000]);
+grid on;
+hold off 
+
+
+subplot(2, 5, 10); %second row, fifth column subplot of 2x5
+plot(data_x, data_y10, 'r-');
+hold on;
+plot(data_x, v0line10, 'k-');
+xlabel("Time (sec)");
+ylabel("Concentration of Product (uM)");
+title("PGO-X50 Values (2000 uM)");
+ylim([0 1400]);
+grid on;
+hold off 
+
+sgtitle("PGOX50 Enzyme Data and Initial Velocities")
+
+figure(2)
+plot(Sub_Concentrations, v_naught, 'k.');
+hold on
+plot(Sub_Concentrations, michaelis_menten, 'r-');
+title("PGO-X50 Michaelis-Menten Plot");
+xlabel("Substrate Concentration (uM)");
+ylabel("Velocities (m/s)");
+legend("Initial Velocities", "Michaelis Menten Model", "Location", "best");
+grid on;
+hold off
+
 
 %% ____________________
 %% RESULTS
