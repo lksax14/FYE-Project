@@ -44,6 +44,7 @@ Vrow = 1; %V_naught array row counter
 Vcol = 1; %V_naught array column counter
 col = 2; %Data column index counter
 Sub_Concentrations = data(1, 2:11); %Creates array of the substrate concentrations for use ([S] (uM))
+num_rows = numel(data_x); %finding number of rows to use in SMA
 
 %%____________________
 %% CALCULATIONS
@@ -51,15 +52,15 @@ Sub_Concentrations = data(1, 2:11); %Creates array of the substrate concentratio
 %concentrations. A simple moving average (SMA) is used to try and smooth
 %the noisy data as much as possible. An average of the test data and the
 %replicate test data is then taken and the initial slope of that data
-%(calculated within the first 20 seconds) is found. That value is placed 
+%(calculated within the first 20 seconds) is found. That value is placed
 %into the vnaught array. This is repeated for each concentration to add up
 %to a total of 50 vnaughts.
 for ct = 1:50
     j = 1; %SMA index counter
     data_y = data(3:end, col); %Test data ([P] (uM))
     data_yrep = data(3:end, col + 10); %Replicate test data ([P] (uM))
-    SMA = zeros([1, 7482]); %Pre-allocates an array of zeros for use
-    SMAyrep = zeros([1, 7482]); %Pre-allocates an array of zeros for use
+    SMA = zeros([1, num_rows]); %Pre-allocates an array of zeros for use
+    SMAyrep = zeros([1, num_rows]); %Pre-allocates an array of zeros for use
     col = col + 1;
     %These statements smooth both the original test data and the replicate
     %test data
