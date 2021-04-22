@@ -6,7 +6,7 @@ function M3_main_SSS_tt
 % each concentration of the different substrates.
 %
 % Function Call
-% M2_Algorithm_014_24(data)
+% M3_main_SSS_tt
 %
 % Input Arguments
 % N / A
