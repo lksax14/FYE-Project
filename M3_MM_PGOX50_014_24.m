@@ -108,6 +108,8 @@ Km = m(1) * vMax;
 
 michaelis_menten = vMax * Sub_Concentrations ./ (Km + Sub_Concentrations);
 
+%SSE Calculation
+SSE = sum((v_naught - michaelis_menten) .^ 2);
 
 %% ____________________
 %% FORMATTED TEXT/FIGURE DISPLAYS
