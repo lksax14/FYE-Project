@@ -1,0 +1,48 @@
+%THIS IS THE MAIN FUNCTION THAT CALLS THE M4 ALGORITHM
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ENGR 132 
+% Program Description 
+% The purpose of this program is to analyze the kinetic enzyme test data
+% given
+%
+% Assignment Information
+%   Assignment:     M3, Problem 2B
+%   Team member:    William Albright, albrighw@purdue.edu [repeat for each person]
+%                   Leo Sakuma, lsakuma@purdue.edu
+%                   Luke Sachse, lsachse@purdue.edu
+%                   Alec Liu, ajliu@purdue.edu
+%   Team ID:        014-24
+%   Academic Integrity:
+%     [] We worked with one or more peers but our collaboration
+%        maintained academic integrity.
+%     Peers we worked with: N/A
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%% ____________________
+%% INITIALIZATION
+data = readmatrix('Data_nextGen_KEtesting_allresults.csv'); %Imports the data file to be used
+
+%% ____________________
+%% CALCULATIONS & DISPLAYS
+[v_naughts, vMax, Km, SSE] = M4_Algorithm_014_24(data); %Gets the parameters needed and as well the SSE
+disp(v_naughts)
+disp(vMax)
+disp(Km)
+disp(SSE)
+
+%% ____________________
+%% RESULTS
+
+
+%% ____________________
+%% ANALYSIS
+
+
+%% ____________________
+%% ACADEMIC INTEGRITY STATEMENT
+% I have not used source code obtained from any other unauthorized
+% source, either modified or unmodified.  I have not provided
+% access to my code to anyone in any way. The script I am 
+% submitting is my own original work.
