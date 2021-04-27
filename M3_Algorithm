@@ -127,7 +127,7 @@ plot(data_x, data_y1, 'r-');
 grid on;
 hold on;
 plot(data_x, v0line1, 'k-');
-xlabel("Time (sec)");
+xlabel("Time (sec)"); 
 ylabel("Concentration of Product (uM))");
 title("PGO-X50 Values (3.75 uM)");
 legend('Enzyme Data','Initial Velocity','Location','best');
