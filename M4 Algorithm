@@ -38,16 +38,18 @@ function [v_naught, vMax, Km, SSE] = M4_Algorithm_014_24(data)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% ____________________
 %% INITIALIZATION
-data_x = data(3:end, 1); %Time data (seconds)
+data_x = data(2:end, 1); %Time data (seconds)
 v_naught = zeros([5, 10]); %Pre-allocates the array of vnaughts (5x10)
 Km = zeros([1, 5]); %Pre-allocates the array of Km values (1x5)
 vMax = zeros([1, 5]); %Pre-allocates the array of vMax values (1x5)
-SSE = zeros([1, 5]); %Pre-allocated the array of SSE values (1x5)
+SSE = zeros([1, 5]); %Pre-allocates the array of SSE values (1x5)
+michaelis_menten = zeros([5, 10]); %Pre-allocates the array of Michaelis-Menten values (5x10)
 Vrow = 1; %V_naught array row counter
 Vcol = 1; %V_naught array column counter
 col = 2; %Data column index counter
 Sub_Concentrations = data(1, 2:11); %Creates array of the substrate concentrations for use ([S] (uM))
 num_rows = numel(data_x); %finding number of rows to use in SMA (improvement 2)
+
 
 %%____________________
 %% CALCULATIONS
@@ -55,7 +57,7 @@ num_rows = numel(data_x); %finding number of rows to use in SMA (improvement 2)
 %concentrations. A simple moving average (SMA) is used to try and smooth
 %the noisy data as much as possible. An average of the test data and the
 %replicate test data is then taken and the initial slope of that data
-%(calculated within the first 20 seconds) is found. That value is placed
+%(calculated within the first 33 seconds) is found. That value is placed
 %into the vnaught array. This is repeated for each concentration to add up
 %to a total of 50 vnaughts.
 for ct = 1:50
@@ -70,17 +72,20 @@ for ct = 1:50
     %These statements smooth both the original test data and the replicate
     %test data
     for i = 3:numel(data_y)
-        for k = 1:-1:0
+        for k = 2:-1:0
             SMA(j) = SMA(j) + (data_y(i - k));
             SMAyrep(j) = SMAyrep(j) + (data_yrep(i - k));
         end
-        SMA(j) = SMA(j) / 2;
-        SMAyrep(j) = SMAyrep(j) / 2;
+        %The following two statements were removed because we decided it was best to get the average over 3 points instead of 2
+        %SMA(j) = SMA(j) / 2; 
+        %SMAyrep(j) = SMAyrep(j) / 2;
+        SMA(j) = SMA(j) / 3; %improvement 3
+        SMAyrep(j) = SMAyrep(j) / 3; %improvement 3
         j = j + 1;
     end
     data_SMAave = (SMA(1:end) + SMAyrep(1:end)) / 2; %Takes the average of the original and replicate test data in their smoothed form
     %coeffs = polyfit(data_x(2:20), data_SMAave(1:19), 1); Removed because 20 seconds was clearly not enough time to gather an accurate v_naught value.
-    coeffs = polyfit(data_x(2:48), data_SMAave(1:47), 1); %Finds the slope of that averaged data within the first 48 seconds (improvement 3) 48 Seconds was chosen because it reflected the most accurate values based on the PGO data
+    coeffs = polyfit(data_x(2:33), data_SMAave(1:32), 1); %Finds the slope of that averaged data within the first 33 seconds (improvement 3) 48 Seconds was chosen because it reflected the most accurate values based on the PGO data
     v_naught(Vrow, Vcol) = coeffs(1); %Places that value into the array as needed
     Vcol = Vcol + 1;
     if Vcol == 11
@@ -106,7 +111,6 @@ end
 
 %vMax = max(v_naught, [], 2); Removed because this method was terribly wrong
 
-michaelis_menten = zeros([5, 10]);
 %These statements use the Lineweaver-Burk method (double reciprocals) to
 %try and find Km and vMax values for each enzyme (improvement 1)
 for ct = 1:5
@@ -123,17 +127,7 @@ end
 
 %% ____________________
 %% FORMATTED TEXT/FIGURE DISPLAYS
-%This figure displays the Michaelis-Menten plot (1 plot, 5 models)
-figure(2)
-plot(Sub_Concentrations, v_naught, 'k.');
-hold on
-plot(Sub_Concentrations, michaelis_menten, 'r-');
-title("PGO-X50 Michaelis-Menten Plot");
-xlabel("Substrate Concentration (uM)");
-ylabel("Velocities (m/s)");
-legend("Initial Velocities", "Michaelis Menten Model", "Location", "best");
-grid on;
-hold off
+
 
 %% ____________________
 %% RESULTS
